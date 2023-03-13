@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -50,6 +51,11 @@ public abstract class BaseTest {
 	@BeforeEach
 	protected void setUp() {
 		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+	}
+
+	@AfterAll
+	void stopWireMock() {
+		wireMockServer.stop();
 	}
 
 	protected String mapToJson(Object obj) throws JsonProcessingException {
