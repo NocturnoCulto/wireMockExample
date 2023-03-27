@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,15 +39,20 @@ public abstract class BaseTest {
 	@BeforeAll
 	void startWireMock() {
 		wireMockServer.start();
-		configureFor("localhost", 8123);
-		stubFor(get(urlPathEqualTo("/getNameById")).withQueryParam("id",matching("[0-9]+")).willReturn(aResponse().withBodyFile("personName.json")
-				.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).withStatus(200)));
-
 	}
 
 	@BeforeEach
 	protected void setUp() {
 		mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+		configureFor("localhost", 8123);
+		stubFor(get(urlPathEqualTo("/getNameById")).withQueryParam("id",matching("[0-9]+")).willReturn(aResponse().withBodyFile("personName.json")
+				.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).withStatus(200)));
+	}
+
+	@AfterEach
+	protected void clearMappings() {
+		wireMockServer.resetMappings();
 	}
 
 	@AfterAll
